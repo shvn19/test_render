@@ -1,11 +1,15 @@
 // call all the required packages
+require('dotenv').config();
 const express = require('express')
 const multer = require('multer');
+const fileUploader = require('./configs/cloudinary.config')
 const app = express();
 
 const PORT = 5000;
 
 app.use(express());
+
+console.log('pro ', process.env.CLOUDINARY_NAME);
 
 // SET STORAGE
 var storage = multer.diskStorage({
@@ -27,7 +31,8 @@ app.get('/',function(req,res){
   res.sendFile(__dirname + '/index.html');
 })
 
-app.post('/uploadfile', upload.single('myFile'), (req, res, next) => {
+// app.post('/uploadfile', upload.single('myFile'), (req, res, next) => {
+app.post('/uploadfile', fileUploader.single('myFile'), (req, res, next) => {
   const file = req.file
   console.log('#1.1 come here')
   if (!file) {
@@ -36,7 +41,7 @@ app.post('/uploadfile', upload.single('myFile'), (req, res, next) => {
     return next(error)
   }
   console.log('#1 file taken')
-  res.send(file)
+  res.json({ secure_url: req.file.path });
 })
 
 //Uploading multiple files
